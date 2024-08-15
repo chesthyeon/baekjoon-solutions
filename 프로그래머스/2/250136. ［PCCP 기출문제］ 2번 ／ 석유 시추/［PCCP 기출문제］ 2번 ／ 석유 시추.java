@@ -1,66 +1,73 @@
 import java.util.*;
 
 class Solution {
-    int[] dx = {-1, 1, 0, 0};
-    int[] dy = {0, 0, -1, 1};
-    int rows, cols;
-    
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
+    static int rows, cols;
+    static int[][] land;
+    static boolean[][] visited;
+    static Map<Integer, Integer> oilAmount;
+
     public int solution(int[][] land) {
+        this.land = land;
         rows = land.length;
         cols = land[0].length;
-        int[][] visited = new int[rows][cols];
-        Map<Integer, Integer> oilAmounts = new HashMap<>();
+        visited = new boolean[rows][cols];
+        oilAmount = new HashMap<>();
+
+        // 1. 석유 덩어리 찾기
         int groupId = 1;
-        
-        // 연결된 석유 구역 찾기
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                if (land[i][j] == 1 && visited[i][j] == 0) {
-                    int amount = bfs(land, visited, i, j, groupId);
-                    oilAmounts.put(groupId, amount);
+                if (land[i][j] == 1 && !visited[i][j]) {
+                    bfs(i, j, groupId);
                     groupId++;
                 }
             }
         }
-        
-        // 각 열에서 얻을 수 있는 석유량 계산
+
+        // 2. 각 열에서 얻을 수 있는 최대 석유량 계산
         int maxOil = 0;
         for (int j = 0; j < cols; j++) {
             Set<Integer> groups = new HashSet<>();
             for (int i = 0; i < rows; i++) {
-                if (visited[i][j] != 0) {
-                    groups.add(visited[i][j]);
+                if (land[i][j] != 0) {
+                    groups.add(land[i][j]);
                 }
             }
-            int totalOil = groups.stream().mapToInt(g -> oilAmounts.get(g)).sum();
+            int totalOil = 0;
+            for (int group : groups) {
+                totalOil += oilAmount.get(group);
+            }
             maxOil = Math.max(maxOil, totalOil);
         }
-        
+
         return maxOil;
     }
-    
-    private int bfs(int[][] land, int[][] visited, int x, int y, int groupId) {
+
+    static void bfs(int x, int y, int groupId) {
         Queue<int[]> queue = new LinkedList<>();
         queue.offer(new int[]{x, y});
-        visited[x][y] = groupId;
-        int amount = 0;
-        
+        visited[x][y] = true;
+        land[x][y] = groupId;
+        int count = 0;
+
         while (!queue.isEmpty()) {
-            int[] curr = queue.poll();
-            amount++;
-            
+            int[] cur = queue.poll();
+            count++;
+
             for (int i = 0; i < 4; i++) {
-                int nx = curr[0] + dx[i];
-                int ny = curr[1] + dy[i];
-                
+                int nx = cur[0] + dx[i];
+                int ny = cur[1] + dy[i];
+
                 if (nx >= 0 && nx < rows && ny >= 0 && ny < cols 
-                    && land[nx][ny] == 1 && visited[nx][ny] == 0) {
+                    && land[nx][ny] == 1 && !visited[nx][ny]) {
                     queue.offer(new int[]{nx, ny});
-                    visited[nx][ny] = groupId;
+                    visited[nx][ny] = true;
+                    land[nx][ny] = groupId;
                 }
             }
         }
-        
-        return amount;
+        oilAmount.put(groupId, count);
     }
 }
