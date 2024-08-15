@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 class Solution {
     public int solution(String[] friends, String[] gifts) {
@@ -12,9 +13,9 @@ class Solution {
         int[] giftScore = new int[n];
 
         for (String gift : gifts) {
-            String[] parts = gift.split(" ");
-            int giver = indexMap.get(parts[0]);
-            int receiver = indexMap.get(parts[1]);
+            String[] giftArray = gift.split(" ");
+            int giver = indexMap.get(giftArray[0]);
+            int receiver = indexMap.get(giftArray[1]);
             giftMatrix[giver][receiver]++;
             giftScore[giver]++;
             giftScore[receiver]--;
@@ -38,11 +39,11 @@ class Solution {
             }
         }
 
-        int maxGifts = 0;
+        int answer = 0;
         for (int gift : nextMonthGifts) {
-            maxGifts = Math.max(maxGifts, gift);
+            answer = Math.max(answer, gift);
         }
 
-        return maxGifts;
+        return answer;
     }
 }
