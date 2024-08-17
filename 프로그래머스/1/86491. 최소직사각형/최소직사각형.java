@@ -1,16 +1,18 @@
+import java.util.*;
+
 class Solution {
     public int solution(int[][] sizes) {
-        int maxWidth = 0;
+        int answer = 0;
         int maxHeight = 0;
+        int maxWidth = 0;
         
-        for (int[] card : sizes) {
-            int width = Math.max(card[0], card[1]);
-            int height = Math.min(card[0], card[1]);
-            
+        for (int[] size : sizes){
+            int height = Math.max(size[0], size[1]);
+            int width = Math.min(size[0], size[1]);
+            maxHeight = Math.max(maxHeight,height);
             maxWidth = Math.max(maxWidth, width);
-            maxHeight = Math.max(maxHeight, height);
         }
-        
-        return maxWidth * maxHeight;
+        answer = maxHeight * maxWidth;
+        return answer;
     }
 }
