@@ -28,17 +28,17 @@ public class Main {
         int maxCount = 0;
         boolean isSecond = false;
 
-        for (int i = 0; i < 8001; i++) {
-            if (count[i] > maxCount) {
+        for (int i = 0; i < 8001; i++){
+            if(count[i] > maxCount){
                 maxCount = count[i];
                 mode = i - 4000;
                 isSecond = false;
-            } else if (count[i] == maxCount && !isSecond) {
-                mode = i - 4000;
+            }
+            else if (count[i] == maxCount && !isSecond){
                 isSecond = true;
+                mode = i - 4000;
             }
         }
-
         // 4. 범위
         int range = numbers[N - 1] - numbers[0];
 
