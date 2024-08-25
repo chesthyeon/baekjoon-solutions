@@ -2,12 +2,11 @@ WITH ReviewCounts AS (
     SELECT MEMBER_ID, COUNT(*) AS review_count
     FROM REST_REVIEW
     GROUP BY MEMBER_ID
-    ORDER BY review_count DESC
 ),
 TopReviewers AS (
     SELECT MEMBER_ID
     FROM ReviewCounts
-    WHERE review_count = (SELECT review_count FROM ReviewCounts LIMIT 1)
+    WHERE review_count = (SELECT MAX(review_count) FROM ReviewCounts)
 )
 SELECT 
     MP.MEMBER_NAME,
