@@ -1,11 +1,21 @@
+WITH RECURSIVE HourRange AS (
+    -- 초기 시간 설정 (9시)
+    SELECT 9 AS HOUR
+    UNION ALL
+    -- 재귀적으로 1씩 증가시켜 19시까지 시간 범위를 생성
+    SELECT HOUR + 1
+    FROM HourRange
+    WHERE HOUR < 19
+)
 SELECT 
-    HOUR(DATETIME) AS HOUR, 
-    COUNT(*) AS COUNT
+    HR.HOUR, 
+    COALESCE(COUNT(A.DATETIME), 0) AS COUNT
 FROM 
-    ANIMAL_OUTS
-WHERE 
-    HOUR(DATETIME) BETWEEN 9 AND 19
+    HourRange HR
+LEFT JOIN 
+    ANIMAL_OUTS A 
+    ON HR.HOUR = HOUR(A.DATETIME)
 GROUP BY 
-    HOUR
+    HR.HOUR
 ORDER BY 
-    HOUR;
+    HR.HOUR;
