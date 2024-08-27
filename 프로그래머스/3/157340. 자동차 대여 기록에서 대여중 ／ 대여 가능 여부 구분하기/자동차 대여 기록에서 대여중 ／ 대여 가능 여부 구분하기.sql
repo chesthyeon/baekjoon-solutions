@@ -2,7 +2,7 @@ WITH RENTAL_STATUS AS (
     SELECT DISTINCT CAR_ID,
            CASE 
                WHEN EXISTS (
-                   SELECT 1
+                   SELECT TRUE
                    FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY
                    WHERE CAR_ID = CRCRH.CAR_ID
                    AND '2022-10-16' BETWEEN START_DATE AND END_DATE
