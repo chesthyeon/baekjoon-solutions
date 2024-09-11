@@ -7,24 +7,35 @@ public class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int M = Integer.parseInt(st.nextToken());
         int N = Integer.parseInt(st.nextToken());
-        boolean[] isPrime = new boolean[N + 1];
+
+        List<Integer> primes = generatePrimesUsingGoldbach(N);
+
+        StringBuilder sb = new StringBuilder();
+        for (int prime : primes) {
+            if (prime >= M && prime <= N) {
+                sb.append(prime).append("\n");
+            }
+        }
+        System.out.print(sb);
+    }
+
+    private static List<Integer> generatePrimesUsingGoldbach(int n) {
+        List<Integer> primes = new ArrayList<>();
+        boolean[] isPrime = new boolean[n + 1];
         Arrays.fill(isPrime, true);
         isPrime[0] = isPrime[1] = false;
 
-        for (int i = 2; i * i <= N; i++) {
+        for (int i = 2; i <= n; i++) {
             if (isPrime[i]) {
-                for (int j = i * i; j <= N; j += i) {
-                    isPrime[j] = false;
+                primes.add(i);
+                if ((long) i * i <= n) {
+                    for (int j = i * i; j <= n; j += i) {
+                        isPrime[j] = false;
+                    }
                 }
             }
         }
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = M; i <= N; i++) {
-            if (isPrime[i]) {
-                sb.append(i).append("\n");
-            }
-        }
-        System.out.print(sb);
+        return primes;
     }
 }
