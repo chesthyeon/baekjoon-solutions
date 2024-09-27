@@ -1,52 +1,33 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
-    static ArrayList<Integer> arrayList = new ArrayList<>();
-    static Integer tempValue;
+class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(bufferedReader.readLine());
-        while (n > 0){
-            StringTokenizer stringTokenizer = new StringTokenizer(bufferedReader.readLine());
-            switch (stringTokenizer.nextToken()){
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        Stack<Integer> stack = new Stack<>();
+        int n = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++){
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            String cmd = st.nextToken();
+            switch (cmd){
                 case "push":
-                    push(Integer.parseInt(stringTokenizer.nextToken()));
+                    stack.push(Integer.parseInt(st.nextToken()));
                     break;
-                case "pop":
-                    System.out.println(pop());
+                case "pop" :
+                    sb.append(stack.isEmpty()? -1 : stack.pop()).append("\n");
                     break;
-                case "size":
-                    System.out.println(size());
+                case "size" :
+                    sb.append(stack.size()).append("\n");
                     break;
-                case "empty":
-                    System.out.println(empty());
+                case "empty" :
+                    sb.append(stack.isEmpty()? 1 : 0).append("\n");
                     break;
-                case "top":
-                    System.out.println(top());
+                case "top" :
+                    sb.append(stack.isEmpty()? -1 : stack.peek()).append("\n");
                     break;
             }
-            n--;
         }
-    }
-    public static void push(Integer data){
-        arrayList.add(data);
-    }
-    public static Integer pop(){
-        if (arrayList.size() == 0) return -1;
-        tempValue = arrayList.get(arrayList.size() - 1);
-        arrayList.remove(arrayList.size() - 1);
-        return tempValue;
-    }
-    public static Integer size(){
-        return arrayList.size();
-    }
-    public static Integer empty(){
-        if (arrayList.size() == 0) return 1;
-        return 0;
-    }
-    public static Integer top(){
-        if (arrayList.size() == 0) return -1;
-        return arrayList.get(arrayList.size() - 1);
+        System.out.println(sb);
     }
 }
