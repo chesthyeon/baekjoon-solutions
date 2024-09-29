@@ -5,10 +5,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input = br.readLine();
-
+        
         Stack<Character> stack = new Stack<>();
         int result = 0;
-
+        
         for (int i = 0; i < input.length(); i++) {
             if (input.charAt(i) == '(') {
                 stack.push('(');
@@ -23,7 +23,7 @@ public class Main {
                 }
             }
         }
-
+        
         System.out.println(result);
     }
 }
