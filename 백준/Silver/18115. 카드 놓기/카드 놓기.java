@@ -4,19 +4,14 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        
         int N = Integer.parseInt(br.readLine());
-        int[] skills = Arrays.stream(br.readLine().split(" "))
-                             .mapToInt(Integer::parseInt)
-                             .toArray();
-        
+        int[] cmd = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
         Deque<Integer> deque = new LinkedList<>();
-        
+
         for (int i = N - 1; i >= 0; i--) {
             int card = N - i;
-            switch (skills[i]) {
-                case 1:
+            switch (cmd[i]) {
+                case 1 :
                     deque.offerFirst(card);
                     break;
                 case 2:
@@ -24,18 +19,16 @@ public class Main {
                     deque.offerFirst(card);
                     deque.offerFirst(temp);
                     break;
-                case 3:
+                case  3 :
                     deque.offerLast(card);
                     break;
             }
         }
-        
+        StringBuilder sb = new StringBuilder();
         while (!deque.isEmpty()) {
-            bw.write(deque.pollFirst() + " ");
+            sb.append(deque.poll()).append(" ");
         }
-        
-        bw.flush();
-        bw.close();
-        br.close();
+
+        System.out.println(sb);
     }
 }
