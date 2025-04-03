@@ -1,21 +1,18 @@
 import java.util.*;
+import java.util.stream.*;
 
 class Solution {
     public String solution(String[] participant, String[] completion) {
         String answer = "";
-        Map<String, Integer> participantMap = new HashMap<>();
-        for (String name :
-                participant) {
-            participantMap.put(name, participantMap.getOrDefault(name,0) + 1);
+        HashMap<String, Integer> map = new HashMap<>();
+        for (String p : completion) {
+            map.put(p, map.getOrDefault(p, 0) + 1);
         }
-        for (String name :
-                completion) {
-            participantMap.put(name, participantMap.get(name) - 1);
-        }
-        for (Map.Entry<String, Integer> entry :
-                participantMap.entrySet()) {
-            if (entry.getValue() != 0){
-                answer = entry.getKey();
+        for (String p : participant) {
+            if (map.getOrDefault(p, 0) == 0) {
+                return p;
+            } else {
+                map.put(p, map.get(p) - 1);
             }
         }
         return answer;
