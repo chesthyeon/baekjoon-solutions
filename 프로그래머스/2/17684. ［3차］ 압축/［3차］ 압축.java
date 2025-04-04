@@ -1,50 +1,36 @@
 import java.util.*;
-
+import java.util.stream.*;
 class Solution {
     public int[] solution(String msg) {
-        // 결과를 저장할 리스트
-        List<Integer> result = new ArrayList<>();
-        
-        // 사전 초기화 (A-Z)
         HashMap<String, Integer> dictionary = new HashMap<>();
-        for (int i = 0; i < 26; i++) {
-            char c = (char) ('A' + i);
-            dictionary.put(String.valueOf(c), i + 1);
-        }
-        
-        int dictSize = 26; // 현재 사전 크기
-        
+        IntStream.range(0, 26).forEach(i ->{
+            dictionary.put(String.valueOf((char) ('A' + i)), i + 1);
+        });
+        int dictionarySize = 27; // 'Z' 다음부터 시작
+
+        List<Integer> answer = new ArrayList<>();
+
         int idx = 0;
         while (idx < msg.length()) {
-            String w = ""; // 현재 일치하는 문자열
-            
-            // 사전에 있는 가장 긴 문자열 찾기
+            String w = "";
+            String cur = "";
+
+            // 사전에서 가장 긴 문자열 찾기
             while (idx < msg.length()) {
-                String temp = w + msg.charAt(idx);
-                if (dictionary.containsKey(temp)) {
-                    w = temp;
+                cur = w + msg.charAt(idx);
+                if (dictionary.containsKey(cur)) {
+                    w = cur;
                     idx++;
                 } else {
                     break;
                 }
             }
-            
-            // 현재 일치하는 단어의 색인 번호 출력
-            result.add(dictionary.get(w));
-            
-            // 다음 글자가 있다면 사전에 추가
-            if (idx < msg.length()) {
-                String newEntry = w + msg.charAt(idx);
-                dictionary.put(newEntry, ++dictSize);
-            }
+            // w의 색인 번호 출력
+            answer.add(dictionary.get(w));
+
+            // 문자열의 끝에 도달하지 않았다면 새 시퀀스를 사전에 추가
+            dictionary.put(cur, dictionarySize++);
         }
-        
-        // List를 배열로 변환
-        int[] answer = new int[result.size()];
-        for (int i = 0; i < answer.length; i++) {
-            answer[i] = result.get(i);
-        }
-        
-        return answer;
+        return answer.stream().mapToInt(Integer::intValue).toArray();
     }
 }
