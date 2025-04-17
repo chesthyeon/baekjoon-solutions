@@ -1,22 +1,19 @@
 import java.util.*;
-import java.util.stream.*;
 
 class Solution {
     boolean solution(String s) {
-        Stack<Character> stack = new Stack<>();
+        int cnt = 0;
         for (char c : s.toCharArray()) {
             if (c == '(') {
-                stack.push(c);
+                cnt++;
+            } else {
+                cnt--;
             }
-            else if (c == ')') {
-                if (stack.isEmpty()) {
-                    return false;
-                }
-                else {
-                    stack.pop();
-                }
+
+            if (cnt < 0) {
+                return false;
             }
         }
-        return stack.isEmpty();
+        return cnt == 0 ? true : false;
     }
 }
