@@ -1,10 +1,17 @@
-
 import java.util.*;
-import java.util.stream.*;
 
 class Solution {
     public int[] solution(int[] num_list) {
-        int[] answer = IntStream.range(0, num_list.length).map(i -> num_list[num_list.length -1 - i]).toArray();
-        return answer;
+        int start = 0;
+        int end = num_list.length - 1;
+        while(end > start){
+            int temp = num_list[end];
+            num_list[end] = num_list[start];
+            num_list[start] = temp;
+            start++;
+            end--;
+        }
+
+        return num_list;
     }
 }
