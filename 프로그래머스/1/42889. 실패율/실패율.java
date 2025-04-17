@@ -1,29 +1,35 @@
-
 import java.util.*;
-import java.util.stream.*;
-
 class Solution {
     public int[] solution(int N, int[] stages) {
-        int[] challenger = new int[N + 2];
-        for (int stage : stages) {
-            challenger[stage]++;
+        int[] playerAtStage = new int[N + 2];
+        for(int i : stages){
+            playerAtStage[i]++;
         }
-
-        HashMap<Integer, Double> fails = new HashMap<>();
-        double total = stages.length;
-
-        for (int stage = 1; stage <= N; stage++) {
-            if (challenger[stage] == 0) {
-                fails.put(stage, 0.);
+        
+        Map<Integer, Double> failureRates = new HashMap();
+        int remainingPlayers = stages.length;
+        
+        for(int stageNum = 1; stageNum <= N; stageNum++){
+            if(remainingPlayers == 0){
+                failureRates.put(stageNum, 0.0);
+                continue;
             }
-            else  {
-                fails.put(stage, challenger[stage]/total);
-                total -= challenger[stage];
-            }
+            double failureRate = (double) playerAtStage[stageNum] / remainingPlayers;
+            failureRates.put(stageNum, failureRate);
+            
+            remainingPlayers -= playerAtStage[stageNum];
         }
-        return fails.entrySet().stream().sorted(((o1, o2) ->
-                o1.getValue().equals(o2.getValue()) ? Integer.compare(o1.getKey(), o2.getKey())
-                : Double.compare(o2.getValue(), o1.getValue()))).mapToInt(Map.Entry::getKey).toArray();
-
+        
+        List<Integer> sortedStages = new ArrayList<>(failureRates.keySet());
+        sortedStages.sort((a, b) -> {
+            // 실패율이 같다면 스테이지 번호가 작은 것이 먼저 오도록 정렬
+            if (failureRates.get(b).equals(failureRates.get(a))) {
+                return a - b;
+            }
+            // 실패율 내림차순 정렬
+            return Double.compare(failureRates.get(b), failureRates.get(a));
+        });
+        
+        return sortedStages.stream().mapToInt(Integer::intValue).toArray();
     }
 }
