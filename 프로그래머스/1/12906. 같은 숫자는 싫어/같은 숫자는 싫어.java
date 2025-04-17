@@ -1,9 +1,8 @@
 import java.util.*;
-import java.util.stream.*;
 
 public class Solution {
     public int[] solution(int []arr) {
-        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        ArrayDeque<Integer> stack = new ArrayDeque();
         for (int i : arr) {
             if (!stack.isEmpty() && stack.peek() == i) {
                 continue;
