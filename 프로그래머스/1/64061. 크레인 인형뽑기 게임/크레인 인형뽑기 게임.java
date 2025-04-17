@@ -1,43 +1,32 @@
-import java.util.ArrayDeque;
-import java.util.Stack;
-import java.util.stream.IntStream;
+import java.util.*;
 
-public class Solution {
+class Solution {
     public int solution(int[][] board, int[] moves) {
-        int n = board.length;
+        int answer = 0;
+        Stack<Integer> basket = new Stack<>();
         
-        // 각 열에 대한 스택 생성
-        ArrayDeque<Integer>[] lanes = IntStream.range(0, n)
-            .mapToObj(i -> new ArrayDeque<Integer>())
-            .toArray(ArrayDeque[]::new);
-        
-        // board를 역순으로 탐색하며 각 열의 인형을 lanes에 추가
-        IntStream.range(0, n)
-            .map(i -> n - 1 - i)
-            .forEach(i -> IntStream.range(0, n)
-                .filter(j -> board[i][j] > 0)
-                .forEach(j -> lanes[j].addFirst(board[i][j])));
-        
-        // 인형을 담을 바구니와 결과 값 초기화
-        Stack<Integer> bucket = new Stack<>();
-        int[] answer = {0}; // 람다에서 수정 가능하도록 배열로 선언
-        
-        // moves 배열을 순회하며 인형 이동
-        IntStream.of(moves)
-            .map(move -> move - 1) // 인덱스는 0부터 시작하므로 -1
-            .forEach(move -> {
-                if (!lanes[move].isEmpty()) {
-                    int doll = lanes[move].removeFirst();
+        for (int move : moves) {
+            int column = move - 1; // 0-based 인덱스로 변환
+            
+            // 해당 열에서 가장 위에 있는 인형 찾기
+            for (int row = 0; row < board.length; row++) {
+                if (board[row][column] != 0) {
+                    int doll = board[row][column];
+                    board[row][column] = 0; // 인형 집어올림
                     
-                    if (!bucket.isEmpty() && bucket.peek() == doll) {
-                        bucket.pop();
-                        answer[0] += 2; // 인형 두 개가 사라짐
+                    // 바구니에 같은 인형이 있으면 터트림
+                    if (!basket.isEmpty() && basket.peek() == doll) {
+                        basket.pop();
+                        answer += 2; // 인형 2개가 사라짐
                     } else {
-                        bucket.push(doll);
+                        basket.push(doll);
                     }
+                    
+                    break; // 인형을 하나 집었으면 다음 move로
                 }
-            });
+            }
+        }
         
-        return answer[0];
+        return answer;
     }
 }
