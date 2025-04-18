@@ -1,36 +1,43 @@
 import java.util.*;
-import java.util.stream.*;
+
 class Solution {
     public int[] solution(String msg) {
+        // 1. 사전 초기화 (A~Z)
         HashMap<String, Integer> dictionary = new HashMap<>();
-        IntStream.range(0, 26).forEach(i ->{
-            dictionary.put(String.valueOf((char) ('A' + i)), i + 1);
-        });
-        int dictionarySize = 27; // 'Z' 다음부터 시작
-
-        List<Integer> answer = new ArrayList<>();
-
-        int idx = 0;
-        while (idx < msg.length()) {
-            String w = "";
-            String cur = "";
-
-            // 사전에서 가장 긴 문자열 찾기
-            while (idx < msg.length()) {
-                cur = w + msg.charAt(idx);
-                if (dictionary.containsKey(cur)) {
-                    w = cur;
-                    idx++;
-                } else {
-                    break;
-                }
-            }
-            // w의 색인 번호 출력
-            answer.add(dictionary.get(w));
-
-            // 문자열의 끝에 도달하지 않았다면 새 시퀀스를 사전에 추가
-            dictionary.put(cur, dictionarySize++);
+        for (int i = 0; i < 26; i++) {
+            dictionary.put(String.valueOf((char)('A' + i)), i + 1);
         }
-        return answer.stream().mapToInt(Integer::intValue).toArray();
+        
+        List<Integer> result = new ArrayList<>();
+        int dictIndex = 27; // 다음 사전 인덱스 (Z 다음부터)
+        
+        // 2. 문자열 처리
+        int i = 0;
+        while (i < msg.length()) {
+            String w = String.valueOf(msg.charAt(i));
+            i++;
+            
+            // 사전에 있는 가장 긴 문자열 찾기
+            while (i < msg.length() && dictionary.containsKey(w + msg.charAt(i))) {
+                w += msg.charAt(i);
+                i++;
+            }
+            
+            // 현재 문자열의 색인 추가
+            result.add(dictionary.get(w));
+            
+            // 새로운 문자열 사전에 추가 (마지막 문자가 아닐 경우)
+            if (i < msg.length()) {
+                dictionary.put(w + msg.charAt(i), dictIndex++);
+            }
+        }
+        
+        // 리스트를 배열로 변환
+        int[] answer = new int[result.size()];
+        for (int j = 0; j < result.size(); j++) {
+            answer[j] = result.get(j);
+        }
+        
+        return answer;
     }
 }
