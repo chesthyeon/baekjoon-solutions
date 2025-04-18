@@ -3,24 +3,27 @@ import java.util.stream.*;
 
 class Solution {
     public String[] solution(String[] record) {
-        HashMap<String ,String >  map = new HashMap<>();
-        map.put("Enter", "님이 들어왔습니다.");
-        map.put("Leave", "님이 나갔습니다.");
+        Map<String, String> actionMap = new HashMap<>();
+        actionMap.put("Enter", "님이 들어왔습니다.");
+        actionMap.put("Leave", "님이 나갔습니다.");
 
-        HashMap<String ,String > map2 = new HashMap<>();
-        for(String r : record){
-            String[] temp = r.split(" ");
-            if (temp.length == 3) {
-                map2.put(temp[1], temp[2]);
-            }
-        }
-        ArrayList<String> answer = new ArrayList<>();
+        Map<String, String> userMap = new HashMap<>();
         for (String r : record) {
-            String[] temp = r.split(" ");
-            if (map.containsKey(temp[0])) {
-                answer.add(map2.get(temp[1]) + map.get(temp[0]));
+            String[] rParts = r.split(" ");
+            if (rParts.length == 3) {
+                userMap.put(rParts[1], rParts[2]);
             }
         }
-        return answer.toArray(new String[0]);
+
+        List<String> ans = new ArrayList<>();
+        for (String r : record) {
+            String[] rParts = r.split(" ");
+
+            if (actionMap.containsKey(rParts[0])) {
+                ans.add(userMap.get(rParts[1]) + actionMap.get(rParts[0]));
+            }
+        }
+        
+        return ans.toArray(new String[0]);
     }
 }
