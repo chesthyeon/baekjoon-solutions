@@ -1,59 +1,43 @@
 import java.util.*;
+import java.util.stream.*;
 
 class Solution {
     public int[] solution(String[] genres, int[] plays) {
-        // 장르별 총 재생 횟수를 저장할 맵
-        Map<String, Integer> genreTotalPlays = new HashMap<>();
-        // 장르별 노래 정보(인덱스, 재생 횟수)를 저장할 맵
-        Map<String, List<Song>> genreSongs = new HashMap<>();
-        
-        // 데이터 처리
+        Map<String, Integer> totalMap = new HashMap<>();
+        Map<String, List<Song>> songMap = new HashMap<>();
         for (int i = 0; i < genres.length; i++) {
             String genre = genres[i];
             int play = plays[i];
-            
-            // 장르별 총 재생 횟수 누적
-            genreTotalPlays.put(genre, genreTotalPlays.getOrDefault(genre, 0) + play);
-            
-            // 장르별 노래 정보 저장
-            genreSongs.computeIfAbsent(genre, k -> new ArrayList<>())
-                      .add(new Song(i, play));
+            totalMap.put(genre, totalMap.getOrDefault(genre, 0) + play);
+            if (!songMap.containsKey(genre)) {
+                songMap.put(genre, new ArrayList<>());
+            }
+            songMap.get(genre).add(new Song(i, play));
         }
-        
-        // 결과를 저장할 리스트
-        List<Integer> answer = new ArrayList<>();
-        
-        // 장르를 총 재생 횟수로 정렬 (내림차순)
-        genreTotalPlays.entrySet().stream()
-            .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-            .forEach(entry -> {
-                String genre = entry.getKey();
-                List<Song> songs = genreSongs.get(genre);
-                
-                // 장르 내에서 노래를 재생 횟수로 정렬 (내림차순), 같으면 인덱스로 정렬 (오름차순)
-                songs.sort((s1, s2) -> {
-                    if (s1.plays == s2.plays) {
-                        return s1.index - s2.index; // 재생 횟수 같으면 인덱스 오름차순
-                    }
-                    return s2.plays - s1.plays; // 재생 횟수 내림차순
-                });
-                
-                // 최대 2곡까지 선택
-                answer.add(songs.get(0).index); // 가장 많이 재생된 노래
-                if (songs.size() > 1) {
-                    answer.add(songs.get(1).index); // 두 번째로 많이 재생된 노래
-                }
+
+        List<String> sortedTotal = new ArrayList<>(totalMap.keySet());
+        sortedTotal.sort((o1, o2) -> {
+            return totalMap.get(o2) - totalMap.get(o1);
+        });
+
+        List<Integer> ans = new ArrayList<>();
+        for (String s : sortedTotal) {
+            List<Song> songs = songMap.get(s);
+            songs.sort((o1, o2) -> {
+                if(o2.plays == o1.plays) return o1.index - o2.index;
+                return o2.plays - o1.plays;
             });
-        
-        // List<Integer>를 int[]로 변환
-        return answer.stream().mapToInt(Integer::intValue).toArray();
+            int cnt = Math.min(2, songs.size());
+            for (int i = 0; i < cnt; i++) {
+                ans.add(songs.get(i).index);
+            }
+        }
+        return ans.stream().mapToInt(Integer::intValue).toArray();
     }
-    
-    // 노래 정보를 담는 내부 클래스
-    static class Song {
-        int index;  // 노래의 고유 번호
-        int plays;  // 재생 횟수
-        
+    class Song {
+        int index;
+        int plays;
+
         Song(int index, int plays) {
             this.index = index;
             this.plays = plays;
