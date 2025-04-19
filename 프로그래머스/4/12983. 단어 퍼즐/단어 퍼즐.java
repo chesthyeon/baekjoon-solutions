@@ -1,28 +1,31 @@
 import java.util.*;
 
-public class Solution {
+class Solution {
     public int solution(String[] strs, String t) {
-        // Set으로 단어 조각들 저장 (검색 O(1) 시간복잡도)
-        Set<String> wordSet = new HashSet<>(Arrays.asList(strs));
-        int n = t.length();
+        // 단어 조각들을 HashSet에 저장하여 검색 속도 향상
+        HashSet<String> wordSet = new HashSet<>(Arrays.asList(strs));
         
-        // dp[i] = t의 0~i까지 문자열을 만드는 최소 조각 수
-        int[] dp = new int[n + 1];
-        Arrays.fill(dp, Integer.MAX_VALUE - 1); // 오버플로우 방지를 위해 -1
-        dp[0] = 0; // 빈 문자열은 0개로 만들 수 있음
+        // dp[i] = t의 0~i까지의 부분 문자열을 만드는 데 필요한 최소 조각 개수
+        int[] dp = new int[t.length() + 1];
         
-        // 각 위치까지의 최소 조각 수 계산
-        for (int end = 1; end <= n; end++) {
-            // 가능한 모든 시작점 탐색 (최대 단어 길이 제한)
-            for (int start = Math.max(0, end - 5); start < end; start++) {
-                String piece = t.substring(start, end);
-                // 해당 조각이 있는지 확인하고 DP 갱신
+        // 불가능한 경우를 표시하기 위한 큰 값
+        Arrays.fill(dp, Integer.MAX_VALUE - 1);
+        
+        // 빈 문자열은 0개로 만들 수 있음
+        dp[0] = 0;
+        
+        // 동적 프로그래밍으로 최소 조각 수 계산
+        for (int i = 1; i <= t.length(); i++) {
+            // 단어 조각의 최대 길이는 5이므로 최대 5글자까지만 확인
+            for (int j = 1; j <= 5 && i - j >= 0; j++) {
+                String piece = t.substring(i - j, i);
                 if (wordSet.contains(piece)) {
-                    dp[end] = Math.min(dp[end], dp[start] + 1);
+                    dp[i] = Math.min(dp[i], dp[i - j] + 1);
                 }
             }
         }
         
-        return dp[n] < Integer.MAX_VALUE - 1 ? dp[n] : -1;
+        // 불가능한 경우 -1 반환
+        return dp[t.length()] < Integer.MAX_VALUE - 1 ? dp[t.length()] : -1;
     }
 }
