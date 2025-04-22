@@ -1,65 +1,42 @@
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
 class Solution {
-
-    int N;
-    int E;
-    int[][] matrix;
     public int solution(int n, int s, int a, int b, int[][] fares) {
-        N = n;
-        E = fares.length;
-        matrix = new int[n][n];
-
-        for (int i = 0; i < E; i++) {
-            int u = fares[i][0] - 1;
-            int v = fares[i][1] - 1;
-            int cost = fares[i][2];
-            matrix[u][v] = cost;
-            matrix[v][u] = cost;
-        }
-
-        int[] together = dijkstra(s - 1);
-        int minCost = Integer.MAX_VALUE;
-        for(int i = 0; i < N; i++) {
-            int[] alone = dijkstra(i);
-            int cost = together[i] + alone[a - 1] + alone[b - 1];
-            if(cost < minCost) {
-                minCost = cost;
+        // 그래프 초기화 (플로이드-워셜용)
+        int[][] dist = new int[n+1][n+1];
+        
+        // 모든 경로를 무한대로 초기화
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                dist[i][j] = i == j ? 0 : 20000001; // 최대 비용보다 큰 값
             }
         }
-
+        
+        // 주어진 경로 정보로 그래프 구성
+        for (int[] fare : fares) {
+            int u = fare[0];
+            int v = fare[1];
+            int cost = fare[2];
+            dist[u][v] = cost;
+            dist[v][u] = cost; // 양방향 그래프
+        }
+        
+        // 플로이드-워셜 알고리즘
+        for (int k = 1; k <= n; k++) {
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+        
+        // 최소 비용 계산
+        int minCost = dist[s][a] + dist[s][b]; // 합승 안 하는 경우
+        
+        // 각 지점에서 합승을 끝내는 경우
+        for (int i = 1; i <= n; i++) {
+            int costViaNodI = dist[s][i] + dist[i][a] + dist[i][b];
+            minCost = Math.min(minCost, costViaNodI);
+        }
+        
         return minCost;
-    }
-
-    public int[] dijkstra(int start) {
-        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
-        boolean[] visited = new boolean[N];
-        int[] distance = new int[N];
-        Arrays.fill(distance, Integer.MAX_VALUE);
-        distance[start] = 0;
-        pq.add(new int[] {0, start});
-
-        while (!pq.isEmpty()) {
-            int[] cur = pq.remove();
-            int u = cur[1];
-            if (visited[u]) {
-                continue;
-            }
-
-            visited[u] = true;
-            for (int v = 0; v < N; v++) {
-                if(matrix[u][v] == 0) {
-                    continue;
-                }
-                if (distance[u] + matrix[u][v] < distance[v]) {
-                    distance[v] = distance[u] + matrix[u][v];
-                    pq.add(new int[]{distance[v], v});
-                }
-            }
-        }
-
-        return distance;
     }
 }
