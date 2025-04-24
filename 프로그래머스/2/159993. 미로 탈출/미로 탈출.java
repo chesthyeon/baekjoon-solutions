@@ -1,63 +1,55 @@
 import java.util.*;
 
 class Solution {
-    int[] dx = new int[]{0,-1,0,1};
-    int[] dy = new int[]{-1,0,1,0};
+    // 레버~시작점 거리와 레버~출구 거리의 합
     public int solution(String[] maps) {
-        int h = maps.length;
-        int w = maps[0].length();
 
-        int[] start = new int[2], end = new int[2], lever =  new int[2];
 
-        char[][] maze = new char[h][w];
-        for (int i = 0; i < maze.length; i++) {
-            maze[i] = maps[i].toCharArray();
-            for (int j = 0; j < maze[i].length; j++) {
-                if (maze[i][j] == 'S') {
-                    start[0] = i;
-                    start[1] = j;
-                } else if (maze[i][j] == 'E') {
-                    end[0] = i;
-                    end[1] = j;
-                } else if (maze[i][j] == 'L') {
-                    lever[0] = i;
-                    lever[1] = j;
+        int R = maps.length;
+        int C = maps[0].length();
+        int[][] time = new int[R][C];
+        Queue<Integer> q = new ArrayDeque<>();
+
+        for(int r=0; r<R; r++){
+            for(int c=0; c<C; c++){
+                if(maps[r].charAt(c)=='L'){
+                    q.add(r);
+                    q.add(c);
+                }
+                else{
+                    time[r][c] = Integer.MAX_VALUE;
                 }
             }
         }
 
-        int dist1 = bfs(maze, start, lever, h, w);
-        if (dist1 == -1) {return -1;}
+        int toStart = -1;
+        int toEnd = -1;
 
-        int dist2 =  bfs(maze, lever, end, h, w);
-        if (dist2 == -1) {return -1;}
-
-        return dist1 + dist2;
-    }
-
-    int bfs(char[][] maze, int[] start, int[] end, int h, int w) {
-        int[][] dist = new int[h][w];
-        dist[start[0]][start[1]] = 1;
-
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(start);
-
-        while (!queue.isEmpty()) {
-            int[] cur = queue.poll();
-            int x = cur[0], y = cur[1];
-
-            if (x == end[0] && y == end[1]) {
-                return dist[x][y] - 1;
-            }
-
-            for (int i = 0; i < 4; i++) {
-                int nx = x + dx[i], ny = y + dy[i];
-                if (nx >= 0 && ny >= 0 && nx < h && ny < w && maze[nx][ny] != 'X' && dist[nx][ny] == 0) {
-                    queue.offer(new int[]{nx, ny});
-                    dist[nx][ny] = dist[x][y] + 1;
+        int[][] dir = new int[][]{{-1,0},{1,0},{0,-1},{0,1}};
+        while(toStart==-1 || toEnd==-1){
+            if(q.size()==0) return -1;
+            int r = q.poll();
+            int c = q.poll();
+            int t = time[r][c]+1;
+            for(int i=0; i<4; i++){
+                int nextR = r+dir[i][0];
+                int nextC = c+dir[i][1];
+                if(nextR>=0 && nextR<R && nextC>=0 && nextC<C){
+                    if(maps[nextR].charAt(nextC)!='X' && time[nextR][nextC]>t){
+                        time[nextR][nextC] = t;
+                        q.add(nextR);
+                        q.add(nextC);
+                        if(maps[nextR].charAt(nextC)=='S' && toStart==-1){
+                            toStart = t;
+                        }
+                        if(maps[nextR].charAt(nextC)=='E' && toEnd==-1){
+                            toEnd = t;
+                        }
+                    }
                 }
             }
         }
-        return -1;
+
+        return toStart + toEnd;
     }
 }
