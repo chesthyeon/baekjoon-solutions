@@ -1,3 +1,4 @@
+-- 해답: 부모의 형질을 모두 가지는 대장균 찾기
 SELECT 
     C.ID,
     C.GENOTYPE,
@@ -8,6 +9,5 @@ JOIN
     ECOLI_DATA P ON C.PARENT_ID = P.ID
 WHERE 
     (C.GENOTYPE & P.GENOTYPE) = P.GENOTYPE
-    AND C.PARENT_ID IS NOT NULL
 ORDER BY 
     C.ID;
