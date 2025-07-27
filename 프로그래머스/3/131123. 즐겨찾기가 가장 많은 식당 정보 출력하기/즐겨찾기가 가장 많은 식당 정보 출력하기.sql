@@ -1,11 +1,53 @@
-SELECT A.FOOD_TYPE  ,A.REST_ID  ,A.REST_NAME    ,A.FAVORITES 
-FROM REST_INFO A
-INNER JOIN(
-                SELECT 
-                        FOOD_TYPE
-                        ,MAX(FAVORITES) AS FAVORITES
-                FROM REST_INFO
-                GROUP BY FOOD_TYPE
-            ) B
-            ON A.FOOD_TYPE = B.FOOD_TYPE AND A.FAVORITES = B.FAVORITES
-ORDER BY A.FOOD_TYPE DESC
+-- 해답: 즐겨찾기가 가장 많은 식당 정보 출력하기
+SELECT 
+    FOOD_TYPE,
+    REST_ID,
+    REST_NAME,
+    FAVORITES
+FROM 
+    REST_INFO
+WHERE 
+    (FOOD_TYPE, FAVORITES) IN (
+        SELECT 
+            FOOD_TYPE,
+            MAX(FAVORITES)
+        FROM REST_INFO
+        GROUP BY FOOD_TYPE
+    )
+ORDER BY 
+    FOOD_TYPE DESC;
+
+-- 방법 2: 윈도우 함수 사용 (더 직관적)
+SELECT 
+    FOOD_TYPE,
+    REST_ID,
+    REST_NAME,
+    FAVORITES
+FROM (
+    SELECT 
+        FOOD_TYPE,
+        REST_ID,
+        REST_NAME,
+        FAVORITES,
+        RANK() OVER (PARTITION BY FOOD_TYPE ORDER BY FAVORITES DESC) AS rn
+    FROM REST_INFO
+) ranked
+WHERE rn = 1
+ORDER BY FOOD_TYPE DESC;
+
+-- 방법 3: 상관 서브쿼리 사용
+SELECT 
+    FOOD_TYPE,
+    REST_ID,
+    REST_NAME,
+    FAVORITES
+FROM 
+    REST_INFO R1
+WHERE 
+    FAVORITES = (
+        SELECT MAX(FAVORITES)
+        FROM REST_INFO R2
+        WHERE R2.FOOD_TYPE = R1.FOOD_TYPE
+    )
+ORDER BY 
+    FOOD_TYPE DESC;
