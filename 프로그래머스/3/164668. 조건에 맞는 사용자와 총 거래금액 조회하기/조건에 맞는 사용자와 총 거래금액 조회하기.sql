@@ -1,16 +1,35 @@
 SELECT 
-    ub.writer_id,
-    uu.nickname,
-    SUM(ub.price) AS total_sales
+    U.USER_ID,
+    U.NICKNAME,
+    SUM(B.PRICE) AS TOTAL_SALES
 FROM 
-    used_goods_board ub
+    USED_GOODS_USER U
 JOIN 
-    used_goods_user uu ON ub.writer_id = uu.user_id
+    USED_GOODS_BOARD B ON U.USER_ID = B.WRITER_ID
 WHERE 
-    ub.status = 'DONE'
+    B.STATUS = 'DONE'
 GROUP BY 
-    ub.writer_id, uu.nickname
+    U.USER_ID, U.NICKNAME
 HAVING 
-    SUM(ub.price) >= 700000
+    SUM(B.PRICE) >= 700000
 ORDER BY 
-    total_sales
+    TOTAL_SALES ASC;
+
+-- 방법 2: 서브쿼리 사용
+SELECT 
+    U.USER_ID,
+    U.NICKNAME,
+    T.TOTAL_SALES
+FROM 
+    USED_GOODS_USER U
+JOIN (
+    SELECT 
+        WRITER_ID,
+        SUM(PRICE) AS TOTAL_SALES
+    FROM USED_GOODS_BOARD
+    WHERE STATUS = 'DONE'
+    GROUP BY WRITER_ID
+    HAVING SUM(PRICE) >= 700000
+) T ON U.USER_ID = T.WRITER_ID
+ORDER BY 
+    T.TOTAL_SALES ASC;
