@@ -1,29 +1,47 @@
 import java.util.*;
-import java.util.stream.*;
 
 class Solution {
     public String[] solution(String[] record) {
-        Map<String, String> actionMap = new HashMap<>();
-        actionMap.put("Enter", "님이 들어왔습니다.");
-        actionMap.put("Leave", "님이 나갔습니다.");
-
-        Map<String, String> userMap = new HashMap<>();
-        for (String r : record) {
-            String[] rParts = r.split(" ");
-            if (rParts.length == 3) {
-                userMap.put(rParts[1], rParts[2]);
+        // 1. 사용자 ID별 최종 닉네임을 저장할 HashMap
+        HashMap<String, String> userNicknames = new HashMap<>();
+        
+        // 2. 입장/퇴장 기록을 저장할 리스트 (Change는 제외)
+        List<String[]> actions = new ArrayList<>();
+        
+        // 3. 1단계: 모든 기록을 처리하여 최종 닉네임 확정
+        for (String log : record) {
+            String[] parts = log.split(" ");
+            String action = parts[0];  // Enter, Leave, Change
+            String userId = parts[1];  // 사용자 ID
+            
+            if (action.equals("Enter") || action.equals("Change")) {
+                String nickname = parts[2];  // 닉네임 (Leave에는 없음)
+                // 사용자의 닉네임을 최신으로 업데이트
+                userNicknames.put(userId, nickname);
             }
-        }
-
-        List<String> ans = new ArrayList<>();
-        for (String r : record) {
-            String[] rParts = r.split(" ");
-
-            if (actionMap.containsKey(rParts[0])) {
-                ans.add(userMap.get(rParts[1]) + actionMap.get(rParts[0]));
+            
+            // Enter와 Leave만 결과 생성 대상
+            if (action.equals("Enter") || action.equals("Leave")) {
+                actions.add(new String[]{action, userId});
             }
         }
         
-        return ans.toArray(new String[0]);
+        // 4. 2단계: 최종 닉네임을 적용하여 결과 메시지 생성
+        List<String> result = new ArrayList<>();
+        
+        for (String[] actionInfo : actions) {
+            String action = actionInfo[0];
+            String userId = actionInfo[1];
+            String finalNickname = userNicknames.get(userId);
+            
+            if (action.equals("Enter")) {
+                result.add(finalNickname + "님이 들어왔습니다.");
+            } else if (action.equals("Leave")) {
+                result.add(finalNickname + "님이 나갔습니다.");
+            }
+        }
+        
+        // 5. List를 String 배열로 변환하여 반환
+        return result.toArray(new String[result.size()]);
     }
 }
