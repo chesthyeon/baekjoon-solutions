@@ -1,6 +1,6 @@
 # [level 3] 오랜 기간 보호한 동물(1) - 59044 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59044#qna) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59044) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@ Empty
 
 ### 제출 일자
 
-2024년 08월 25일 23:45:51
+2025년 07월 29일 18:34:39
 
 ### 문제 설명
 
