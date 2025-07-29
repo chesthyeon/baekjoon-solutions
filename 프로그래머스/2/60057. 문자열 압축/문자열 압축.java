@@ -1,42 +1,41 @@
 class Solution {
     public int solution(String s) {
-        int answer = s.length();
-        
-        // 1부터 문자열 길이의 절반까지 단위로 압축 시도
+        int minLen = s.length();
+
+        // 1개 단위부터 문자열 길이/2까지 시도
         for (int unit = 1; unit <= s.length() / 2; unit++) {
+            StringBuilder sb = new StringBuilder();
             String prev = s.substring(0, unit);
             int count = 1;
-            StringBuilder compressed = new StringBuilder();
-            
-            // unit 단위로 문자열 비교
-            for (int i = unit; i <= s.length() - unit; i += unit) {
-                String current = s.substring(i, i + unit);
-                
-                if (prev.equals(current)) {
+
+            // unit 길이씩 잘라서 비교
+            for (int i = unit; i < s.length(); i += unit) {
+                String curr = "";
+                if (i + unit <= s.length()) {
+                    curr = s.substring(i, i + unit);
+                } else {
+                    curr = s.substring(i);
+                }
+
+                if (prev.equals(curr) && curr.length() == unit) {
                     count++;
                 } else {
-                    // 반복된 문자열 처리
-                    if (count > 1) compressed.append(count);
-                    compressed.append(prev);
-                    prev = current;
+                    // 압축 결과에 추가
+                    if (count > 1) sb.append(count);
+                    sb.append(prev);
+
+                    prev = curr;
                     count = 1;
                 }
             }
-            
-            // 마지막 문자열 처리
-            if (count > 1) compressed.append(count);
-            compressed.append(prev);
-            
-            // 나누어 떨어지지 않는 나머지 문자열 처리
-            int remain = s.length() % unit;
-            if (remain > 0) {
-                compressed.append(s.substring(s.length() - remain));
-            }
-            
-            // 최소 길이 업데이트
-            answer = Math.min(answer, compressed.length());
+
+            // 마지막 부분 처리
+            if (count > 1) sb.append(count);
+            sb.append(prev);
+
+            minLen = Math.min(minLen, sb.length());
         }
-        
-        return answer;
+
+        return minLen;
     }
 }
