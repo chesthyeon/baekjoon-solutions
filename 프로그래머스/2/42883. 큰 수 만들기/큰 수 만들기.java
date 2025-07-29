@@ -1,28 +1,36 @@
+import java.util.*;
+
 class Solution {
     public String solution(String number, int k) {
-        StringBuilder result = new StringBuilder();
-        int length = number.length() - k;
-        int start = 0;
+        // 스택을 사용해서 결과 구성
+        Stack<Character> stack = new Stack<>();
+        int removeCount = 0; // 제거한 숫자의 개수
         
-        while (length > 0) {
-            char max = '0';
-            int maxIdx = start;
-            
-            // 현재 위치부터 선택 가능한 범위 내에서 가장 큰 숫자 찾기
-            for (int i = start; i <= number.length() - length; i++) {
-                if (number.charAt(i) > max) {
-                    max = number.charAt(i);
-                    maxIdx = i;
-                    // 9가 나오면 더 큰 숫자는 없으므로 바로 중단
-                    if (max == '9') break;
-                }
+        // 왼쪽부터 각 숫자를 확인
+        for (char digit : number.toCharArray()) {
+            // 현재 숫자가 스택의 top보다 크고, 아직 제거할 숫자가 남아있으면
+            while (!stack.isEmpty() && 
+                   stack.peek() < digit && 
+                   removeCount < k) {
+                stack.pop();     // 작은 숫자 제거
+                removeCount++;   // 제거 개수 증가
             }
             
-            result.append(max);
-            start = maxIdx + 1;
-            length--;
+            stack.push(digit);   // 현재 숫자 추가
         }
         
-        return result.toString();
+        // k개를 모두 제거하지 못한 경우 (뒤에서부터 제거)
+        while (removeCount < k) {
+            stack.pop();
+            removeCount++;
+        }
+        
+        // 스택을 문자열로 변환
+        StringBuilder sb = new StringBuilder();
+        for (char digit : stack) {
+            sb.append(digit);
+        }
+        
+        return sb.toString();
     }
 }
