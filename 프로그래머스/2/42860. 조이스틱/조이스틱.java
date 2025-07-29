@@ -1,26 +1,39 @@
 class Solution {
     public int solution(String name) {
-        // 상하 이동 계산
+        int n = name.length();
+        
+        // 1. 상하 조작 횟수 계산
         int upDown = 0;
         for (char c : name.toCharArray()) {
+            // A에서 목표 문자까지의 최소 조작 횟수
             upDown += Math.min(c - 'A', 'Z' - c + 1);
         }
         
-        // 좌우 이동 계산
-        int len = name.length();
-        int leftRight = len - 1; // 기본적으로 오른쪽으로 쭉 이동
+        // 2. 좌우 이동 횟수 최적화
+        int minMove = n - 1; // 기본: 처음부터 끝까지 순차 이동
         
-        for (int i = 0; i < len; i++) {
-            int next = i + 1;
-            while (next < len && name.charAt(next) == 'A') {
-                next++;
+        for (int i = 0; i < n; i++) {
+            // i번째 문자 다음부터 연속된 A의 끝 지점 찾기
+            int nextPos = i + 1;
+            while (nextPos < n && name.charAt(nextPos) == 'A') {
+                nextPos++;
             }
             
-            // min(정방향으로 i까지 + 뒤로 돌아와 끝에서 next까지, 처음부터 뒤로 돌아가서 next까지 + 다시 앞으로 와서 i까지)
-            int move = i + (len - next) + Math.min(i, len - next);
-            leftRight = Math.min(leftRight, move);
+            // 여러 이동 패턴 중 최소값 계산
+            
+            // 패턴 1: 순차적으로 오른쪽 이동 (기존 minMove)
+            
+            // 패턴 2: i까지 가고 돌아와서 끝에서부터 nextPos까지
+            // 0 → i → 0 → (n-1) → ... → nextPos
+            int pattern2 = i * 2 + (n - nextPos);
+            
+            // 패턴 3: 끝에서부터 nextPos까지 가고 돌아와서 i까지  
+            // 0 → (n-1) → ... → nextPos → (n-1) → 0 → ... → i
+            int pattern3 = (n - nextPos) * 2 + i;
+            
+            minMove = Math.min(minMove, Math.min(pattern2, pattern3));
         }
         
-        return upDown + leftRight;
+        return upDown + minMove;
     }
 }
