@@ -1,25 +1,31 @@
 class Solution {
     public int[] solution(int[] sequence, int k) {
-        int[] answer = {0, sequence.length - 1};
-        int left = 0, right = 0;
-        int minLength = sequence.length;
+        int left = 0;
         int sum = 0;
-        while (right < sequence.length){
+        int bestLength = Integer.MAX_VALUE;
+        int[] result = new int[2];
+        
+        for (int right = 0; right < sequence.length; right++) {
+            // 오른쪽 확장
             sum += sequence[right];
-
-            while (sum >= k){
-                if (sum == k){
-                    if (right - left < minLength || (right - left == minLength && answer[0] > left)){
-                        answer[0] = left;
-                        answer[1] = right;
-                        minLength = right - left;
-                    }
-                }
+            
+            // sum이 k보다 크면 왼쪽 축소
+            while (sum > k && left <= right) {
                 sum -= sequence[left];
                 left++;
             }
-            right++;
+            
+            // 목표 합 발견!
+            if (sum == k) {
+                int currentLength = right - left + 1;
+                if (currentLength < bestLength) {
+                    bestLength = currentLength;
+                    result[0] = left;
+                    result[1] = right;
+                }
+            }
         }
-        return answer;
+        
+        return result;
     }
 }
