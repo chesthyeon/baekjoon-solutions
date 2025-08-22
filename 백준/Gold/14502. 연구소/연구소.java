@@ -1,94 +1,103 @@
-/// https://www.acmicpc.net/problem/14502
-/// 연구소
-
-
-import java.util.*;
 import java.io.*;
-
+import java.util.*;
 
 public class Main {
-    static List<List<Integer>> virus_map = new ArrayList<>();
-    static int max = Integer.MIN_VALUE;
-    static List<int[]> virus_location = new ArrayList<>();
-    static int n;
-    static int m;
+    static int N, M;
+    static int[][] map;
+    static int[][] temp;
+    static int maxSafeArea = 0;
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
+    static List<int[]> emptySpaces = new ArrayList<>();
+    static List<int[]> viruses = new ArrayList<>();
+    
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
-        for (int i = 0; i < n; i++) {
+        
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        
+        map = new int[N][M];
+        temp = new int[N][M];
+        
+        // 입력 받으면서 빈 공간과 바이러스 위치 저장
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            virus_map.add(new ArrayList<>());
-            for (int j = 0; j < m; j++){
-                int temp = Integer.parseInt(st.nextToken());
-                virus_map.get(i).add(temp);
-                if (temp == 2) {
-                    virus_location.add(new int[]{i, j});
+            for (int j = 0; j < M; j++) {
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if (map[i][j] == 0) {
+                    emptySpaces.add(new int[]{i, j});
+                } else if (map[i][j] == 2) {
+                    viruses.add(new int[]{i, j});
                 }
             }
         }
-
-        for (int i = 0; i < n * m - 2; i++) {
-            int x1 = i / m;
-            int y1 = i % m;
-            if (virus_map.get(x1).get(y1) != 0) continue;
-
-            for (int j = i + 1; j < n * m - 1; j++) {
-                int x2 = j / m;
-                int y2 = j % m;
-                if (virus_map.get(x2).get(y2) != 0) continue;
-
-                for (int k = j + 1; k < n * m; k++) {
-                    int x3 = k / m;
-                    int y3 = k % m;
-                    if (virus_map.get(x3).get(y3) != 0) continue;
-
-                    virus_map.get(x1).set(y1, 1);
-                    virus_map.get(x2).set(y2, 1);
-                    virus_map.get(x3).set(y3, 1);
-                    spread_virus();
-                    virus_map.get(x3).set(y3, 0);
-                }
-                virus_map.get(x2).set(y2, 0);
-            }
-            virus_map.get(x1).set(y1, 0);
-        }
-        System.out.println(max);
+        
+        // 벽 3개 세우기 (백트래킹)
+        buildWalls(0, 0);
+        
+        System.out.println(maxSafeArea);
     }
-    public static void spread_virus() {
-        int[] dx = {-1, 1, 0, 0};
-        int[] dy = {0, 0, -1, 1};
-        List<List<Integer>> spread_virus_map = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            spread_virus_map.add(new ArrayList<>(virus_map.get(i)));
+    
+    // 벽 3개를 세우는 모든 경우의 수 탐색
+    static void buildWalls(int count, int start) {
+        if (count == 3) {
+            // 벽 3개를 다 세웠으면 바이러스 확산 시뮬레이션
+            simulate();
+            return;
         }
-        Queue<int[]> queue = new ArrayDeque<>();
-
-        for (int[] temp : virus_location) {
-            queue.add(temp);
+        
+        // 빈 공간 중에서 벽을 세울 곳 선택
+        for (int i = start; i < emptySpaces.size(); i++) {
+            int[] pos = emptySpaces.get(i);
+            int x = pos[0], y = pos[1];
+            
+            map[x][y] = 1;  // 벽 설치
+            buildWalls(count + 1, i + 1);
+            map[x][y] = 0;  // 백트래킹 (벽 제거)
         }
-
+    }
+    
+    // 바이러스 확산 시뮬레이션
+    static void simulate() {
+        // 현재 상태를 temp에 복사
+        for (int i = 0; i < N; i++) {
+            temp[i] = map[i].clone();
+        }
+        
+        // BFS로 바이러스 확산
+        Queue<int[]> queue = new LinkedList<>();
+        for (int[] virus : viruses) {
+            queue.offer(new int[]{virus[0], virus[1]});
+        }
+        
         while (!queue.isEmpty()) {
-            int[] cur = queue.poll();
-            spread_virus_map.get(cur[0]).set(cur[1], 2);
+            int[] current = queue.poll();
+            int x = current[0], y = current[1];
+            
             for (int i = 0; i < 4; i++) {
-                int nx = cur[0] + dx[i];
-                int ny = cur[1] + dy[i];
-                if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-                if (spread_virus_map.get(nx).get(ny) != 0) continue;
-                queue.add(new int[]{nx, ny});
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                
+                if (nx >= 0 && nx < N && ny >= 0 && ny < M 
+                    && temp[nx][ny] == 0) {
+                    temp[nx][ny] = 2;  // 바이러스 확산
+                    queue.offer(new int[]{nx, ny});
+                }
             }
         }
-        get_safe_area(spread_virus_map);
-    }
-    public static void get_safe_area(List<List<Integer>> spread_virus_map){
-        int cnt = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (spread_virus_map.get(i).get(j) == 0) cnt++;
+        
+        // 안전 영역 개수 계산
+        int safeArea = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (temp[i][j] == 0) {
+                    safeArea++;
+                }
             }
         }
-        max = max < cnt ? cnt : max;
+        
+        maxSafeArea = Math.max(maxSafeArea, safeArea);
     }
 }
