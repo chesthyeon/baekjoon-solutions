@@ -1,30 +1,30 @@
 import java.util.*;
-import java.util.stream.*;
-
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
-        int n = progresses.length;
-        Queue<Integer> deploy = new ArrayDeque<>();
+        Queue<Integer> daysQueue = new ArrayDeque<>();
         
-        // 각 작업의 배포 가능일 계산
-        for (int i = 0; i < n; i++) {
-            deploy.offer((int) Math.ceil((100.0 - progresses[i]) / speeds[i]));
+        // 1. 각 작업의 배포 날짜 계산해서 큐에 넣기
+        for (int i = 0; i < progresses.length; i++) {
+            int days = (int) Math.ceil((100.0 - progresses[i]) / speeds[i]);
+            daysQueue.add(days);
         }
         
-        ArrayList<Integer> answer = new ArrayList<>();
-        while (!deploy.isEmpty()) {
-            int current = deploy.poll();
+        List<Integer> answer = new ArrayList<>();
+        
+        // 2. 첫째 날부터 배포 시작
+        while (!daysQueue.isEmpty()) {
+            int firstDay = daysQueue.poll(); // 첫 번째 작업의 배포일
             int count = 1;
             
-            // 현재 작업보다 먼저 완료되는 작업 모두 함께 배포
-            while (!deploy.isEmpty() && deploy.peek() <= current) {
-                deploy.poll();
+            // 3. 이 날짜보다 짧거나 같은 배포일들 카운트
+            while (!daysQueue.isEmpty() && daysQueue.peek() <= firstDay) {
+                daysQueue.poll();
                 count++;
             }
             
             answer.add(count);
         }
         
-        return answer.stream().mapToInt(Integer::intValue).toArray();
+        return answer.stream().mapToInt(i -> i).toArray();
     }
 }
