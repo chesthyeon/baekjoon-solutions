@@ -1,24 +1,26 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Solution {
     public int[] solution(int n, String[] words) {
-        HashSet<String> wordSets = new HashSet<>();
-        wordSets.add(words[0]);
-        char pre = words[0].charAt(words[0].length() - 1);
-        int[] ans = new int[2];
+        Set<String> usedWords = new HashSet<>();
+        usedWords.add(words[0]);
+        
+        char lastChar = words[0].charAt(words[0].length() - 1);
+        
         for (int i = 1; i < words.length; i++) {
-            String word = words[i];
-            char cur = word.charAt(0);
-            if (wordSets.contains(word) || pre != cur) {
-                ans[0] = i % n + 1;
-                ans[1] = i / n + 1;
-                return ans;
-            } else {
-                wordSets.add(word);
-                pre = word.charAt(word.length() - 1);
+            String currentWord = words[i];
+            char firstChar = currentWord.charAt(0);
+            
+            // 탈락 조건 체크
+            if (usedWords.contains(currentWord) || lastChar != firstChar) {
+                return new int[]{i % n + 1, i / n + 1};
             }
+            
+            // 다음 라운드 준비
+            usedWords.add(currentWord);
+            lastChar = currentWord.charAt(currentWord.length() - 1);
         }
-        return ans;
+        
+        return new int[]{0, 0};  // 탈락자 없음
     }
 }
