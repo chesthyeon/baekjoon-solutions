@@ -1,33 +1,25 @@
 import java.util.*;
-
-public class Solution {
+class Solution {
     public int solution(String dirs) {
-        Set<String> visitedPaths = new HashSet<>();
-        int x = 0, y = 0; // 시작점 (0,0)
+        Map<Character, int[]> map = new HashMap<>();
+        map.put('U', new int[]{0, 1});
+        map.put('D', new int[]{0, -1});
+        map.put('L', new int[]{-1, 0});
+        map.put('R', new int[]{1, 0});
         
-        for (char dir : dirs.toCharArray()) {
-            int nx = x, ny = y;
-            
-            // 방향에 따른 이동
-            switch (dir) {
-                case 'U': ny++; break;
-                case 'D': ny--; break;
-                case 'L': nx--; break;
-                case 'R': nx++; break;
-            }
-            
-            // 경계 체크
-            if (nx < -5 || nx > 5 || ny < -5 || ny > 5) continue;
-            
-            // 길을 정규화해서 저장 (양방향이므로)
-            String path = Math.min(x, nx) + "," + Math.min(y, ny) + 
-                         "->" + Math.max(x, nx) + "," + Math.max(y, ny);
-            visitedPaths.add(path);
-            
+        Set<String> set = new HashSet<>();
+        int x = 5, y = 5;
+        for(char c : dirs.toCharArray()){
+            int[] cmd = map.get(c);
+            int nx = x + cmd[0];
+            int ny = y + cmd[1];
+            if(nx < 0 || nx > 10 || ny < 0 || ny > 10) continue;
+            set.add(x + " " + y + " " + nx + " " + ny);
+            set.add(nx + " " + ny + " " + x + " " + y);
             x = nx;
             y = ny;
+            
         }
-        
-        return visitedPaths.size();
+        return set.size() / 2;
     }
 }
