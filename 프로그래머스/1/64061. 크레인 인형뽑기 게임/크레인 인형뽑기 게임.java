@@ -1,32 +1,33 @@
-import java.util.*;
-
+import java.util.Stack;
 class Solution {
     public int solution(int[][] board, int[] moves) {
-        int answer = 0;
-        Stack<Integer> basket = new Stack<>();
+        int size = board.length;  // 동적으로 크기 구하기
+        Stack<Integer>[] stackArr = new Stack[size];
         
-        for (int move : moves) {
-            int column = move - 1; // 0-based 인덱스로 변환
-            
-            // 해당 열에서 가장 위에 있는 인형 찾기
-            for (int row = 0; row < board.length; row++) {
-                if (board[row][column] != 0) {
-                    int doll = board[row][column];
-                    board[row][column] = 0; // 인형 집어올림
-                    
-                    // 바구니에 같은 인형이 있으면 터트림
-                    if (!basket.isEmpty() && basket.peek() == doll) {
-                        basket.pop();
-                        answer += 2; // 인형 2개가 사라짐
-                    } else {
-                        basket.push(doll);
-                    }
-                    
-                    break; // 인형을 하나 집었으면 다음 move로
-                }
+        for(int i = 0; i < stackArr.length; i++){
+            stackArr[i] = new Stack();
+        }
+        
+        for(int j = 0; j < size; j++){
+            for(int i = size - 1; i >= 0; i--){
+                if(board[i][j] == 0) continue;
+                stackArr[j].push(board[i][j]);
             }
         }
         
-        return answer;
+        Stack<Integer> stack = new Stack();
+        int ans = 0;
+        
+        for(int m : moves){
+            if(stackArr[m - 1].isEmpty()) continue;
+            int doll = stackArr[m - 1].pop();
+            if(!stack.isEmpty() && stack.peek() == doll){
+                stack.pop();
+                ans += 2;
+            } else {
+                stack.push(doll);
+            }
+        }
+        return ans;
     }
 }
