@@ -1,19 +1,13 @@
 import java.util.*;
 
-class Solution
-{
-    public int solution(String s)
-    {
-        ArrayDeque<Character> deque = new ArrayDeque<>();
-        deque.add(s.charAt(0));
-        for (int i = 1; i < s.length(); i++) {
-            if (!deque.isEmpty() && deque.peek() == s.charAt(i)) {
-                deque.pop();
-            } else {
-                deque.push(s.charAt(i));
-            }
+class Solution{
+    public int solution(String s){
+        Stack<Character> stack = new Stack<>();
+        for(char c : s.toCharArray()){
+            if(stack.isEmpty() || stack.peek() != c){
+                stack.push(c);
+            } else stack.pop();
         }
-
-        return deque.isEmpty() ? 1 : 0;
+        return stack.isEmpty() ? 1 : 0;
     }
 }
