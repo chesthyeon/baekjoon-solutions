@@ -1,24 +1,16 @@
-import java.util.*;
-import java.util.stream.*;
-
 class Solution {
     public String solution(String[] cards1, String[] cards2, String[] goal) {
-        ArrayDeque<String> cards1Queue = new ArrayDeque<>(Arrays.asList(cards1));
-        ArrayDeque<String> cards2Queue = new ArrayDeque<>(Arrays.asList(cards2));
-        ArrayDeque<String> goalQueue = new ArrayDeque<>(Arrays.asList(goal));
-
-        while (!goalQueue.isEmpty()) {
-            if (!cards1Queue.isEmpty() && cards1Queue.peek().equals(goalQueue.peek())) {
-                cards1Queue.poll();
-            } else if (!cards2Queue.isEmpty() && cards2Queue.peek().equals(goalQueue.peek())) {
-                cards2Queue.poll();
+        int idx1 = 0, idx2 = 0;
+        
+        for (String word : goal) {
+            if (idx1 < cards1.length && word.equals(cards1[idx1])) {
+                idx1++;
+            } else if (idx2 < cards2.length && word.equals(cards2[idx2])) {
+                idx2++;
             } else {
-                break;
+                return "No";
             }
-            goalQueue.poll();
-
         }
-        return goalQueue.isEmpty() ? "Yes" : "No";
-
+        return "Yes";
     }
 }
