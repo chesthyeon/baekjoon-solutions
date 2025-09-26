@@ -11,7 +11,7 @@ class Solution {
             String clothesType = item[1]; // 의상 종류 (중요!)
             
             // 해당 종류의 의상 개수 증가
-            clothesCount.put(clothesType, clothesCount.getOrDefault(clothesType, 0) + 1);
+            clothesCount.merge(clothesType, 1, Integer::sum);
         }
         
         // 3. 조합의 수 계산
