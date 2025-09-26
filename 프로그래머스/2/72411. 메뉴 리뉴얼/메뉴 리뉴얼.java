@@ -1,49 +1,51 @@
 import java.util.*;
 
-class Solution {
+public class Solution {
+    private Map<String, Integer> combCount;
+    
     public String[] solution(String[] orders, int[] course) {
-        List<String> answer = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         
-        for (int length : course) {
-            Map<String, Integer> combinations = new HashMap<>();
-            int maxCount = 0;
+        // 각 코스 길이별로 처리
+        for (int courseLen : course) {
+            combCount = new HashMap<>();
             
-            // 각 주문에서 조합 생성
+            // 모든 주문에서 해당 길이의 조합 생성
             for (String order : orders) {
                 char[] chars = order.toCharArray();
-                Arrays.sort(chars);  // 알파벳 순으로 정렬
-                findCombinations(chars, 0, length, "", combinations);
+                Arrays.sort(chars);  // 정렬해서 조합 순서 통일
+                generateCombinations(chars, 0, "", courseLen);
             }
             
-            // 최대 주문 횟수 찾기
-            for (int count : combinations.values()) {
-                maxCount = Math.max(maxCount, count);
-            }
+            // 최다 주문된 조합들 찾기
+            int maxCount = combCount.values().stream()
+                                   .mapToInt(Integer::intValue)
+                                   .filter(count -> count >= 2)  // 최소 2번 이상
+                                   .max()
+                                   .orElse(0);
             
-            // 최대 주문 횟수인 메뉴 조합만 추가 (2회 이상인 경우만)
             if (maxCount >= 2) {
-                for (Map.Entry<String, Integer> entry : combinations.entrySet()) {
+                for (Map.Entry<String, Integer> entry : combCount.entrySet()) {
                     if (entry.getValue() == maxCount) {
-                        answer.add(entry.getKey());
+                        result.add(entry.getKey());
                     }
                 }
             }
         }
         
-        // 알파벳 순으로 정렬
-        Collections.sort(answer);
-        return answer.toArray(new String[0]);
+        Collections.sort(result);
+        return result.toArray(new String[0]);
     }
     
-    // 조합 생성 (DFS 사용)
-    private void findCombinations(char[] order, int start, int length, String current, Map<String, Integer> combinations) {
-        if (current.length() == length) {
-            combinations.put(current, combinations.getOrDefault(current, 0) + 1);
+    // 조합 생성 (백트래킹)
+    private void generateCombinations(char[] order, int start, String current, int targetLen) {
+        if (current.length() == targetLen) {
+            combCount.merge(current, 1, Integer::sum);
             return;
         }
         
         for (int i = start; i < order.length; i++) {
-            findCombinations(order, i + 1, length, current + order[i], combinations);
+            generateCombinations(order, i + 1, current + order[i], targetLen);
         }
     }
 }
