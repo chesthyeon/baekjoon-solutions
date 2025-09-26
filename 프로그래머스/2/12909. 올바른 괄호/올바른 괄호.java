@@ -1,19 +1,14 @@
 import java.util.*;
-
 class Solution {
     boolean solution(String s) {
-        int cnt = 0;
-        for (char c : s.toCharArray()) {
-            if (c == '(') {
-                cnt++;
-            } else {
-                cnt--;
-            }
-
-            if (cnt < 0) {
-                return false;
+        Stack<Character> stack = new Stack<>();
+        for(char c : s.toCharArray()){
+            if(c == '(') stack.push(c);
+            else {
+                if(stack.isEmpty()) return false;
+                stack.pop();
             }
         }
-        return cnt == 0 ? true : false;
+        return stack.isEmpty();  // ? true : false는 불필요
     }
 }
