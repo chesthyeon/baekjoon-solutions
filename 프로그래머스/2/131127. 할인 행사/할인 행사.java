@@ -1,27 +1,25 @@
 import java.util.*;
-
 class Solution {
     public int solution(String[] want, int[] number, String[] discount) {
-        int answer = 0;
-        
-        // 원하는 제품과 수량을 HashMap에 저장
+        // 원하는 제품-수량 맵 생성
         Map<String, Integer> wantMap = new HashMap<>();
         for (int i = 0; i < want.length; i++) {
             wantMap.put(want[i], number[i]);
         }
         
-        // 10일 연속으로 할인하는 날짜를 탐색
-        for (int i = 0; i <= discount.length - 10; i++) {
-            Map<String, Integer> discountMap = new HashMap<>();
+        int answer = 0;
+        
+        // 슬라이딩 윈도우로 10일씩 체크
+        for (int start = 0; start <= discount.length - 10; start++) {
+            Map<String, Integer> windowMap = new HashMap<>();
             
-            // 현재 시작일부터 10일간의 할인 제품 집계
-            for (int j = 0; j < 10; j++) {
-                String item = discount[i + j];
-                discountMap.put(item, discountMap.getOrDefault(item, 0) + 1);
+            // 현재 10일간의 할인 제품 카운팅
+            for (int i = start; i < start + 10; i++) {
+                windowMap.merge(discount[i], 1, Integer::sum);
             }
             
-            // 원하는 제품의 수량과 할인 제품의 수량이 일치하는지 확인
-            if (wantMap.equals(discountMap)) {
+            // 원하는 것과 일치하는지 확인
+            if (windowMap.equals(wantMap)) {
                 answer++;
             }
         }
