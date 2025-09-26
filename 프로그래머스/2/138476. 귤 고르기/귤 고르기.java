@@ -2,18 +2,24 @@ import java.util.*;
 
 class Solution {
     public int solution(int k, int[] tangerine) {
-        Map<Integer, Integer> tangerineMap = new HashMap<>();
-        for(int t : tangerine) tangerineMap.put(t, tangerineMap.getOrDefault(t, 0) + 1);
-        List<Integer> sortedTangerine = new ArrayList<>(tangerineMap.values());
-        sortedTangerine.sort(((o1, o2) -> o2 - o1));
-        int cnt = 0;
-        for (int i : sortedTangerine) {
-            cnt++;
-            k -= i;
-            if (k <= 0) {
-                return cnt;
-            }
+        // 각 크기별 개수 세기
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int t : tangerine) {
+            map.merge(t, 1, (a, b) -> a + b);
         }
-        return cnt; // 모든 귤을 사용해도 k개를 채우지 못하는 경우 (문제 조건상 발생하지 않을 것)
+        
+        // 개수 기준 내림차순 정렬
+        List<Integer> counts = new ArrayList<>(map.values());
+        counts.sort(Comparator.reverseOrder());
+        
+        // 필요한 최소 종류 계산
+        int answer = 0;
+        for (int count : counts) {
+            k -= count;
+            answer++;
+            if (k <= 0) break;
+        }
+        
+        return answer;
     }
 }
